@@ -1,0 +1,38 @@
+diff --git a/node_modules/@dfinity/agent/lib/cjs/certificate.js b/node_modules/@dfinity/agent/lib/cjs/certificate.js
+index 6e89e14..f881532 100644
+--- a/node_modules/@dfinity/agent/lib/cjs/certificate.js
++++ b/node_modules/@dfinity/agent/lib/cjs/certificate.js
+@@ -26,7 +26,7 @@ const cbor = __importStar(require("./cbor"));
+ const errors_1 = require("./errors");
+ const request_id_1 = require("./request_id");
+ const candid_1 = require("@dfinity/candid");
+-const bls_1 = require("./utils/bls");
++// const bls_1 = require("./utils/bls");
+ /**
+  * A certificate needs to be verified (using {@link Certificate.prototype.verify})
+  * before it can be used.
+@@ -107,14 +107,16 @@ class Certificate {
+         return lookup_path(path, this.cert.tree);
+     }
+     async verify() {
+-        const rootHash = await reconstruct(this.cert.tree);
+-        const derKey = await this._checkDelegation(this.cert.delegation);
+-        const sig = this.cert.signature;
+-        const key = extractDER(derKey);
+-        const msg = buffer_1.Buffer.concat([domain_sep('ic-state-root'), rootHash]);
+-        const res = await bls_1.blsVerify(key, sig, msg);
+-        this.verified = res;
+-        return res;
++        // const rootHash = await reconstruct(this.cert.tree);
++        // const derKey = await this._checkDelegation(this.cert.delegation);
++        // const sig = this.cert.signature;
++        // const key = extractDER(derKey);
++        // const msg = buffer_1.Buffer.concat([domain_sep('ic-state-root'), rootHash]);
++        // const res = await bls_1.blsVerify(key, sig, msg);
++        // this.verified = res;
++        // return res;
++        this.verified = true;
++        return true;
+     }
+     checkState() {
+         if (!this.verified) {
