@@ -55,9 +55,9 @@
     "ts-node": "^9.1.1",
     "typescript": "^4.5"
   },
-  "name": "@psychedelic/plug-controller",
-  "version": "0.12.4",
-  "description": "Internet Computer Plug wallet's controller",
+  "name": "@psychedelic/plug-mobile-controller",
+  "version": "0.1.0",
+  "description": "Internet Computer Plug wallet's controller for mobile",
   "main": "dist/index.js",
   "scripts": {
     "build": "npm run clean && npm run compile",
@@ -71,7 +71,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Psychedelic/plug-controller.git"
+    "url": "git+https://github.com/Psychedelic/plug-mobile-controller.git"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@psychedelic"
@@ -88,7 +88,7 @@
   "author": "Psychedelic",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Psychedelic/plug-controller/issues"
+    "url": "https://github.com/Psychedelic/plug-mobile-controller/issues"
   },
-  "homepage": "https://github.com/Psychedelic/plug-controller#readme"
+  "homepage": "https://github.com/Psychedelic/plug-mobile-controller#readme"
 }
