@@ -11,7 +11,6 @@ import {
   getTokens,
   getAllNFTS
 } from '@psychedelic/dab-js';
-import { bufToBigint } from 'bigint-conversion'
 
 import { getCanisterInfo } from '../../dab';
 import { InferredTransaction } from './rosetta';
