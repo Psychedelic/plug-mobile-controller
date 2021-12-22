@@ -6,6 +6,7 @@ import { ActorSubclass } from '@dfinity/agent';
 import LedgerService, { TimeStamp } from '../../../interfaces/ledger';
 import { Balance } from '../token/methods';
 import { BaseMethodsExtendedActor } from '../actorFactory';
+import { parseAmountToSend } from '../token/methods';
 
 const DECIMALS = 8;
 
@@ -37,19 +38,15 @@ const sendICP = async (
     fee: BigInt(10000),
     memo: BigInt(0),
   };
-  const parsedAmount = BigInt(parseFloat(amount) * 10 ** DECIMALS);
-  const params = {
+  const parsedAmount = parseAmountToSend(amount, DECIMALS);
+  return actor._send_dfx({
     to,
     fee: { e8s: opts?.fee || defaultArgs.fee },
     amount: { e8s: parsedAmount },
     memo: opts?.memo ? BigInt(opts.memo) : defaultArgs.memo,
     from_subaccount: [] as [], // For now, using default subaccount to handle ICP
     created_at_time: [] as [],
-  };
-  console.log('send parameters');
-  console.log(params);
-  console.log(typeof parsedAmount);
-  return actor._send_dfx(params);
+  });
 };
 
 const getBalance = async (
