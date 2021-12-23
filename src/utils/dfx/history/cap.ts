@@ -105,6 +105,8 @@ const formatTransaction = (
   }
 };
 
+const reduceByPID = (acum, token) => ({ ...acum, [token.principal_id.toString()]: token });
+
 export const getCapTransactions = async ({
   principalId,
   lastEvaluatedKey,
@@ -115,22 +117,27 @@ export const getCapTransactions = async ({
   fetch?: typeof crossFetch
 }): Promise<GetUserTransactionResponse> => {
   const url = `${KYASHU_URL}/cap/user/txns/${principalId}${lastEvaluatedKey ? `?LastEvaluatedKey=${lastEvaluatedKey}` : ''
-    }`;
-  try {
+}`;
+try {
+    console.log('calling kyasshy');
     const response = await axios.get<any, AxiosResponse<KyashuResponse>>(url);
     const canisterIds = [
       ...new Set(
         response.data.Items.map(item => getTransactionCanister(item.contractId))
       ),
     ].filter(value => value) as string[];
+    console.log('creating agent', fetch);
     const agent =  new HttpAgent({
-      host: IC_URL_HOST,
       fetch,
     })
-    const dabTokensInfo = (await getTokens({ agent })).reduce((acum, token) => ({ ...acum, [token.principal_id.toString()]: token }), {})
-    const dabNFTsInfo = (await getAllNFTS({ agent })).reduce((acum, token) => ({ ...acum, [token.principal_id.toString()]: token }), {})
+    console.log('created Agent', agent);
+    const dabTokensInfo = (await getTokens({ agent })).reduce(reduceByPID, {});
+    console.log('dabTokensInfo', dabTokensInfo);
+    const dabNFTsInfo = (await getAllNFTS({ agent })).reduce(reduceByPID, {});
+    console.log('dabNFTsInfo', dabNFTsInfo);
     const dabInfo = await Promise.all(
       canisterIds.map(async canisterId => {
+        console.log('formatting', canisterId);
         let canisterInfo = { canisterId }
         if (dabTokensInfo[canisterId])
           canisterInfo['tokenRegistryInfo'] = dabTokensInfo[canisterId]
@@ -138,6 +145,7 @@ export const getCapTransactions = async ({
           canisterInfo['nftRegistryInfo'] = dabNFTsInfo[canisterId]
         try {
           const fetchedCanisterInfo = await getCanisterInfo({ canisterId, fetch });
+          console.log('fetchedCanisterInfo', fetchedCanisterInfo);
           canisterInfo = { ...canisterInfo, ...fetchedCanisterInfo }
         } catch (error) {
           /* eslint-disable-next-line */
