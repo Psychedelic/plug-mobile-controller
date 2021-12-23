@@ -274,7 +274,7 @@ class PlugKeyRing {
   public editPrincipal = async (
     walletNumber: number,
     { name, emoji }: { name?: string; emoji?: string }
-  ): Promise<void> => {
+  ): Promise<PlugWallet> => {
     await this.checkInitialized();
     this.checkUnlocked();
     this.validateSubaccount(walletNumber);
@@ -286,6 +286,7 @@ class PlugKeyRing {
 
     this.state.wallets = wallets;
     this.saveEncryptedState({ wallets }, this.state.password);
+    return wallet;
   };
 
   public registerToken = async (
