@@ -2,10 +2,7 @@
 /* eslint-disable no-underscore-dangle */
 import axios, { AxiosResponse } from 'axios';
 import { Principal } from '@dfinity/principal';
-import {
-  prettifyCapTransactions,
-  TransactionPrettified,
-} from '@psychedelic/cap-js';
+import { prettifyCapTransactions } from '@psychedelic/cap-js';
 import crossFetch from 'cross-fetch';
 import {
   getTokens,
@@ -15,6 +12,8 @@ import {
 import { getCanisterInfo } from '../../dab';
 import { InferredTransaction } from './rosetta';
 import { parseBalance } from '../token';
+import { HttpAgent } from '@dfinity/agent';
+import { IC_URL_HOST } from '../constants';
 
 const KYASHU_URL = 'https://kyasshu.fleek.co';
 
@@ -124,8 +123,12 @@ export const getCapTransactions = async ({
         response.data.Items.map(item => getTransactionCanister(item.contractId))
       ),
     ].filter(value => value) as string[];
-    const dabTokensInfo = (await getTokens({})).reduce((acum, token) => ({ ...acum, [token.principal_id.toString()]: token }), {})
-    const dabNFTsInfo = (await getAllNFTS({})).reduce((acum, token) => ({ ...acum, [token.principal_id.toString()]: token }), {})
+    const agent =  new HttpAgent({
+      host: IC_URL_HOST,
+      fetch,
+    })
+    const dabTokensInfo = (await getTokens({ agent })).reduce((acum, token) => ({ ...acum, [token.principal_id.toString()]: token }), {})
+    const dabNFTsInfo = (await getAllNFTS({ agent })).reduce((acum, token) => ({ ...acum, [token.principal_id.toString()]: token }), {})
     const dabInfo = await Promise.all(
       canisterIds.map(async canisterId => {
         let canisterInfo = { canisterId }
