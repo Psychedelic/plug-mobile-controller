@@ -21,6 +21,7 @@
     "js-sha256": "^0.9.0",
     "json-bigint": "^1.0.0",
     "random-color": "^1.0.1",
+    "react-native-wasm": "^0.1.3",
     "reflect-metadata": "^0.1.13",
     "secp256k1": "^4.0.2",
     "text-encoding": "^0.7.0",
