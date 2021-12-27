@@ -2,10 +2,7 @@
 /* eslint-disable no-underscore-dangle */
 import axios, { AxiosResponse } from 'axios';
 import { Principal } from '@dfinity/principal';
-import {
-  prettifyCapTransactions,
-  TransactionPrettified,
-} from '@psychedelic/cap-js';
+import { prettifyCapTransactions } from '@psychedelic/cap-js';
 import crossFetch from 'cross-fetch';
 import {
   getTokens,
@@ -15,6 +12,9 @@ import {
 import { getCanisterInfo } from '../../dab';
 import { InferredTransaction } from './rosetta';
 import { parseBalance } from '../token';
+import { HttpAgent } from '@dfinity/agent';
+import { IC_URL_HOST } from '../constants';
+import { createAgent } from '..';
 
 const KYASHU_URL = 'https://kyasshu.fleek.co';
 
@@ -106,6 +106,8 @@ const formatTransaction = (
   }
 };
 
+const reduceByPID = (acum, token) => ({ ...acum, [token.principal_id.toString()]: token });
+
 export const getCapTransactions = async ({
   principalId,
   lastEvaluatedKey,
@@ -116,16 +118,17 @@ export const getCapTransactions = async ({
   fetch?: typeof crossFetch
 }): Promise<GetUserTransactionResponse> => {
   const url = `${KYASHU_URL}/cap/user/txns/${principalId}${lastEvaluatedKey ? `?LastEvaluatedKey=${lastEvaluatedKey}` : ''
-    }`;
-  try {
+}`;
+try {
     const response = await axios.get<any, AxiosResponse<KyashuResponse>>(url);
     const canisterIds = [
       ...new Set(
         response.data.Items.map(item => getTransactionCanister(item.contractId))
       ),
     ].filter(value => value) as string[];
-    const dabTokensInfo = (await getTokens({})).reduce((acum, token) => ({ ...acum, [token.principal_id.toString()]: token }), {})
-    const dabNFTsInfo = (await getAllNFTS({})).reduce((acum, token) => ({ ...acum, [token.principal_id.toString()]: token }), {})
+    const agent =  await createAgent({ fetch });
+    const dabTokensInfo = (await getTokens({ agent })).reduce(reduceByPID, {});
+    const dabNFTsInfo = (await getAllNFTS({ agent })).reduce(reduceByPID, {});
     const dabInfo = await Promise.all(
       canisterIds.map(async canisterId => {
         let canisterInfo = { canisterId }

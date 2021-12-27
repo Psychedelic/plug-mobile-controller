@@ -11,7 +11,7 @@ import { wrappedFetch } from './wrappedFetch';
 import { PLUG_PROXY_HOST } from './constants';
 
 export interface CreateAgentArgs {
-  secretKey: BinaryBlob;
+  secretKey?: BinaryBlob;
   defaultIdentity?: Secp256k1KeyIdentity;
   fetch?: any;
 }
@@ -25,7 +25,7 @@ export const createAgent = async ({
   fetch = crossFetch,
 }: CreateAgentArgs): Promise<HttpAgent> => {
   const identity =
-    defaultIdentity || createIdentity(blobFromUint8Array(secretKey));
+    defaultIdentity || (secretKey ? createIdentity(blobFromUint8Array(secretKey)) : undefined);
   const agent = await Promise.resolve(
     new HttpAgent({
       host: process.env.DFX_HOST || PLUG_PROXY_HOST,
