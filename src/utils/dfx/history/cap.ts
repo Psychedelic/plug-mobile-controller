@@ -14,6 +14,7 @@ import { InferredTransaction } from './rosetta';
 import { parseBalance } from '../token';
 import { HttpAgent } from '@dfinity/agent';
 import { IC_URL_HOST } from '../constants';
+import { createAgent } from '..';
 
 const KYASHU_URL = 'https://kyasshu.fleek.co';
 
@@ -119,25 +120,17 @@ export const getCapTransactions = async ({
   const url = `${KYASHU_URL}/cap/user/txns/${principalId}${lastEvaluatedKey ? `?LastEvaluatedKey=${lastEvaluatedKey}` : ''
 }`;
 try {
-    console.log('calling kyasshy');
     const response = await axios.get<any, AxiosResponse<KyashuResponse>>(url);
     const canisterIds = [
       ...new Set(
         response.data.Items.map(item => getTransactionCanister(item.contractId))
       ),
     ].filter(value => value) as string[];
-    console.log('creating agent', fetch);
-    const agent =  new HttpAgent({
-      fetch,
-    })
-    console.log('created Agent', agent);
+    const agent =  await createAgent({ fetch });
     const dabTokensInfo = (await getTokens({ agent })).reduce(reduceByPID, {});
-    console.log('dabTokensInfo', dabTokensInfo);
     const dabNFTsInfo = (await getAllNFTS({ agent })).reduce(reduceByPID, {});
-    console.log('dabNFTsInfo', dabNFTsInfo);
     const dabInfo = await Promise.all(
       canisterIds.map(async canisterId => {
-        console.log('formatting', canisterId);
         let canisterInfo = { canisterId }
         if (dabTokensInfo[canisterId])
           canisterInfo['tokenRegistryInfo'] = dabTokensInfo[canisterId]
@@ -145,7 +138,6 @@ try {
           canisterInfo['nftRegistryInfo'] = dabNFTsInfo[canisterId]
         try {
           const fetchedCanisterInfo = await getCanisterInfo({ canisterId, fetch });
-          console.log('fetchedCanisterInfo', fetchedCanisterInfo);
           canisterInfo = { ...canisterInfo, ...fetchedCanisterInfo }
         } catch (error) {
           /* eslint-disable-next-line */
