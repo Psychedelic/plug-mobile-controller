@@ -236,6 +236,16 @@ class PlugWallet {
     return Object.values(newTokens);
   };
 
+  public removeToken = (tokenId: string) => {
+    if(!(Object.keys(this.registeredTokens).includes(tokenId))) {
+      return Object.values(this.registeredTokens);
+    }
+    const { [tokenId]: removedToken, ...newTokens } = this.registeredTokens;
+    this.registeredTokens = newTokens;
+    this.assets = [...this.assets.filter(asset => asset.canisterId !== tokenId)];
+    return Object.values(newTokens);
+  }
+
   public toJSON = (): JSONWallet => ({
     name: this.name,
     walletNumber: this.walletNumber,
@@ -278,7 +288,7 @@ class PlugWallet {
         await requestCacheUpdate(this.principal, [trxId]);
       }
     } catch (e) {
-      console.log('Kyasshu error');
+      console.log('Kyasshu error', e);
     }
     return burnResult;
   };
@@ -297,15 +307,25 @@ class PlugWallet {
           agent,
           token.standard
         );
-        const balance = await tokenActor.getBalance(
-          this.identity.getPrincipal()
-        );
-        return {
-          name: token.name,
-          symbol: token.symbol,
-          amount: parseBalance(balance),
-          canisterId: token.canisterId,
-        };
+        try {
+          const balance = await tokenActor.getBalance(
+            this.identity.getPrincipal()
+          );
+          return {
+            name: token.name,
+            symbol: token.symbol,
+            amount: parseBalance(balance),
+            canisterId: token.canisterId,
+          };
+        } catch (e) {
+          console.warn("Get Balance error:", e);
+          return {
+            name: token.name,
+            symbol: token.symbol,
+            amount: 'Error',
+            canisterId: token.canisterId,
+          };
+        }
       })
     );
     const assets = [
