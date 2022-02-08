@@ -61,7 +61,7 @@
   "description": "Internet Computer Plug wallet's controller for mobile",
   "main": "dist/index.js",
   "scripts": {
-    "build": "npm run clean && npm run compile",
+    "build": "npm run clean && npm run patch && npm run compile",
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "test": "export NODE_ENV='test' && jest",
@@ -69,7 +69,7 @@
     "watch": "tsc --watch",
     "publish": "npm run build && npm publish",
     "patch": "npx patch-package --use-yarn",
-    "postinstall": "npm patch"
+    "postinstall": "npm run patch"
   },
   "repository": {
     "type": "git",
