@@ -57,7 +57,7 @@
     "typescript": "^4.5"
   },
   "name": "@psychedelic/plug-mobile-controller",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Internet Computer Plug wallet's controller for mobile",
   "main": "dist/index.js",
   "scripts": {
