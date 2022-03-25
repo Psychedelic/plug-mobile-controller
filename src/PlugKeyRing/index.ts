@@ -265,6 +265,21 @@ class PlugKeyRing {
     }
   };
 
+  public isValidPassword = async (password: string): Promise<boolean> => {
+    await this.checkInitialized();
+    try {
+      const { vault, isInitialized } = ((await this.storage.get()) ||
+        {}) as StorageData;
+      if (isInitialized && vault) {
+        const decrypted = this.decryptState(vault, password);
+        return decrypted.password === password;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  };
+
   public lock = async (): Promise<void> => {
     this.isUnlocked = false;
     this.state = { wallets: [] };
@@ -319,7 +334,7 @@ class PlugKeyRing {
   public getTokenInfo = async (
     canisterId: string,
     standard = 'ext',
-    subAccount?: number,
+    subAccount?: number
   ): Promise<{ token: StandardToken; amount: string }> => {
     this.checkUnlocked();
     const index = (subAccount ?? this.currentWalletId) || 0;
