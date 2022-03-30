@@ -719,10 +719,10 @@
   dependencies:
     "fancy-test" "^1.4.3"
 
-"@psychedelic/cap-js@0.0.5":
-  "integrity" "sha512-2zaD6DKUMGk3veZvEEheVv5rPie7rh5q0BXY5qzthi56rd6Qo4xWQlyLNlGuyVzVRPWNbWGoF2zEBS2aBZci0Q=="
-  "resolved" "https://npm.pkg.github.com/download/@psychedelic/cap-js/0.0.5/5623abd851cdf8c36d6a2c2dc961f0ba9b1b9ca4e5db4c0f25e56d5afbc85de4"
-  "version" "0.0.5"
+"@psychedelic/cap-js@0.0.7":
+  "integrity" "sha512-SdvL0DhDPKAUyY8/BXf39WuLFRIzqWeuHwLEqXYH8kO1k2jHR7mbT3pwNNIScuOEbbL2myxHy141QTfkpoHZaA=="
+  "resolved" "https://npm.pkg.github.com/download/@psychedelic/cap-js/0.0.7/fdd88b53949ab9077b5aef84e137ffedcf367b451b1ba90f279c742c979921fb"
+  "version" "0.0.7"
   dependencies:
     "@dfinity/agent" "^0.10.1"
     "@dfinity/candid" "^0.10.1"
@@ -730,10 +730,10 @@
     "axios" "^0.24.0"
     "cross-fetch" "^3.1.4"
 
-"@psychedelic/dab-js@0.5.4":
-  "integrity" "sha512-93y7VvICUaveBG5nK4JzCug6BERhycwLfOq/TOweAJWdcbCOFLAWWWrTylXIpGjDAZbOYOLlqZOgv6Ghza9Mxw=="
-  "resolved" "https://npm.pkg.github.com/download/@psychedelic/dab-js/0.5.4/213f2dad13eb2e1fe8a46e6afe4b0817b0e0fdd283460b0607b23a10d02dd185"
-  "version" "0.5.4"
+"@psychedelic/dab-js@1.2.0":
+  "integrity" "sha512-9ajIMVsu/j53zakV+vbbQk3rr2Vh86rG6DpwMM0F446eSvZ7AAnpEOYwsi7xubLd2oYIFzC/DXcsfAKO3U7IYA=="
+  "resolved" "https://npm.pkg.github.com/download/@psychedelic/dab-js/1.2.0/82040d846167035163f13a90eb905f8952bf0c1bdc0d596c3b6dad238bc2a436"
+  "version" "1.2.0"
   dependencies:
     "@dfinity/agent" "0.9.3"
     "@dfinity/candid" "0.9.3"
