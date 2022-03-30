@@ -19,12 +19,11 @@ export const getCanisterInfo = async ({
   canisterId,
   agent,
   fetch,
-} : {
-  canisterId: string,
-  agent?: HttpAgent,
-  fetch?: typeof crossFetch,
-}
-): Promise<CanisterInfo | undefined> => {
+}: {
+  canisterId: string;
+  agent?: HttpAgent;
+  fetch?: typeof crossFetch;
+}): Promise<CanisterInfo | undefined> => {
   const finalAgent =
     agent ||
     new HttpAgent({
@@ -56,8 +55,10 @@ export const getMultipleCanisterInfo = async (
     agent: finalAgent,
   });
 
-  return result.map(canisterMetadata => ({
-    ...canisterMetadata,
-    icon: canisterMetadata.logo_url,
-  }));
+  return (
+    result?.map(canisterMetadata => ({
+      ...canisterMetadata,
+      icon: canisterMetadata.logo_url,
+    })) || []
+  );
 };

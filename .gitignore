@@ -109,3 +109,6 @@ oclif.manifest.json
 .idea
 
 manual.ts
+
+# Package Lock
+package-lock.json
