@@ -26,7 +26,11 @@ import {
   getICPTransactions,
   GetTransactionsResponse,
 } from '../utils/dfx/history/rosetta';
-import { TOKENS, DEFAULT_ASSETS, DEFAULT_CUSTOM_TOKENS } from '../constants/tokens';
+import {
+  TOKENS,
+  DEFAULT_ASSETS,
+  DEFAULT_CUSTOM_TOKENS,
+} from '../constants/tokens';
 import { uniqueByObjKey } from '../utils/array';
 import {
   getXTCTransactions,
@@ -248,13 +252,6 @@ class PlugWallet {
       ...asset,
       amount: asset.amount.toString(),
     })),
-    nftCollections: this.collections.map(collection => ({
-      ...collection,
-      tokens: collection.tokens.map(token => ({
-        ...token,
-        index: parseInt(token.index.toString(), 10),
-      })),
-    })),
   });
 
   public burnXTC = async (to: string, amount: string) => {
@@ -355,7 +352,10 @@ class PlugWallet {
   public getTransactions = async (): Promise<GetTransactionsResponse> => {
     const icpTrxs = await getICPTransactions(this.accountId);
     const xtcTransactions = await getXTCTransactions(this.principal);
-    const capTransactions = await getCapTransactions({ principalId: this.principal, fetch: this.fetch });
+    const capTransactions = await getCapTransactions({
+      principalId: this.principal,
+      fetch: this.fetch,
+    });
     // merge and format all trx. sort by timestamp
     // TODO: any custom token impelmenting archive should be queried. (0.4.0)
     const transactions = {
@@ -426,7 +426,7 @@ class PlugWallet {
   private addDefaultTokens() {
     DEFAULT_CUSTOM_TOKENS.map(token => {
       this.registeredTokens[token.canisterId] = token;
-    })
+    });
   }
 
   private async sendCustomToken(

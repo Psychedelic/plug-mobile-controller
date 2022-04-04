@@ -1,4 +1,4 @@
-import CryptoJS from 'crypto-js';
+import RNCryptoJS from 'react-native-crypto-js';
 import { PublicKey } from '@dfinity/agent';
 import { BinaryBlob } from '@dfinity/candid';
 import { Principal } from '@dfinity/principal';
@@ -72,7 +72,6 @@ class PlugKeyRing {
 
   public constructor(
     StorageAdapter = new Storage() as KeyringStorage,
-    CryptoAdapter = CryptoJS,
     FetchAdapter?: any
   ) {
     this.state = { wallets: [] };
@@ -80,7 +79,6 @@ class PlugKeyRing {
     this.isInitialized = false;
     this.currentWalletId = 0;
     this.storage = StorageAdapter;
-    this.crypto = CryptoAdapter;
     this.fetch = FetchAdapter;
   }
 
@@ -469,13 +467,13 @@ class PlugKeyRing {
 
   private saveEncryptedState = async (newState, password): Promise<void> => {
     const stringData = JsonBigInt.stringify({ ...this.state, ...newState });
-    const encrypted = this.crypto.AES.encrypt(stringData, password);
+    const encrypted = RNCryptoJS.AES.encrypt(stringData, password);
     await this.storage.set({ vault: encrypted.toString() });
   };
 
   private decryptState = (state, password): PlugState =>
     JSON.parse(
-      this.crypto.AES.decrypt(state, password).toString(this.crypto.enc.Utf8)
+      RNCryptoJS.AES.decrypt(state, password).toString(RNCryptoJS.enc.Utf8)
     );
 }
 
