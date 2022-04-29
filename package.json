@@ -66,9 +66,7 @@
     "test": "export NODE_ENV='test' && jest",
     "lint": "eslint --ext ts,js ./src",
     "watch": "tsc --watch",
-    "publish": "npm run build && npm publish",
-    "patch": "npx patch-package --use-yarn",
-    "postinstall": "npm run patch"
+    "publish": "npm run build && npm publish"
   },
   "repository": {
     "type": "git",
