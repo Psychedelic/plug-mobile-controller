@@ -1,4 +1,4 @@
-import { PublicKey } from '@dfinity/agent';
+import { HttpAgent, PublicKey } from '@dfinity/agent';
 import { BinaryBlob } from '@dfinity/candid';
 import { Principal } from '@dfinity/principal';
 import {
@@ -113,6 +113,8 @@ class PlugWallet {
 
   collections: Array<NFTCollection>;
 
+  agent: HttpAgent;
+
   private identity: Secp256k1KeyIdentity;
 
   private lock: boolean;
@@ -147,6 +149,8 @@ class PlugWallet {
     this.collections = [...collections];
     this.fetch = fetch;
     this.addDefaultTokens();
+    const { secretKey } = this.identity.getKeyPair();
+    this.agent = createAgent({ secretKey, fetch: this.fetch });
   }
 
   public setName(val: string): void {
@@ -184,12 +188,10 @@ class PlugWallet {
     if (!validatePrincipalId(to)) {
       throw new Error(ERRORS.INVALID_PRINCIPAL_ID);
     }
-    const { secretKey } = this.identity.getKeyPair();
-    const agent = await createAgent({ secretKey, fetch: this.fetch });
     try {
       const NFT = getNFTActor({
         canisterId: token.canister,
-        agent,
+        agent: this.agent,
         standard: token.standard,
       });
 
@@ -219,9 +221,7 @@ class PlugWallet {
     if (!validateCanisterId(canisterId)) {
       throw new Error(ERRORS.INVALID_CANISTER_ID);
     }
-    const { secretKey } = this.identity.getKeyPair();
-    const agent = await createAgent({ secretKey, fetch: this.fetch });
-    const tokenActor = await createTokenActor(canisterId, agent, standard);
+    const tokenActor = await createTokenActor(canisterId, this.agent, standard);
 
     const metadata = await tokenActor.getMetadata();
 
@@ -262,11 +262,9 @@ class PlugWallet {
     if (!validateCanisterId(to)) {
       throw new Error(ERRORS.INVALID_CANISTER_ID);
     }
-    const { secretKey } = this.identity.getKeyPair();
-    const agent = await createAgent({ secretKey, fetch: this.fetch });
     const xtcActor = await createTokenActor(
       TOKENS.XTC.canisterId,
-      agent,
+      this.agent,
       'xtc'
     );
     const burnResult = await xtcActor.burnXTC({
@@ -285,17 +283,15 @@ class PlugWallet {
   };
 
   public getBalance = async (): Promise<Array<TokenBalance>> => {
-    const { secretKey } = this.identity.getKeyPair();
     // Get ICP Balance
-    const agent = await createAgent({ secretKey, fetch: this.fetch });
-    const ledger = await createLedgerActor(agent);
+    const ledger = await createLedgerActor(this.agent);
     const icpBalance = await ledger.getBalance(this.accountId);
     // Get Custom Token Balances
     const tokenBalances = await Promise.all(
       Object.values(this.registeredTokens).map(async token => {
         const tokenActor = await createTokenActor(
           token.canisterId,
-          agent,
+          this.agent,
           token.standard
         );
         const balance = await tokenActor.getBalance(
@@ -326,14 +322,16 @@ class PlugWallet {
     canisterId: string,
     standard = 'ext'
   ): Promise<{ token: StandardToken; amount: string }> => {
-    const { secretKey } = this.identity.getKeyPair();
     if (!validateCanisterId(canisterId)) {
       throw new Error(ERRORS.INVALID_CANISTER_ID);
     }
-    const agent = await createAgent({ secretKey, fetch: this.fetch });
     const savedStandard =
       this.registeredTokens[canisterId]?.standard || standard;
-    const tokenActor = await createTokenActor(canisterId, agent, savedStandard);
+    const tokenActor = await createTokenActor(
+      canisterId,
+      this.agent,
+      savedStandard
+    );
 
     const metadataResult = await tokenActor.getMetadata();
 
@@ -448,14 +446,16 @@ class PlugWallet {
     return this.identity.getPem();
   }
 
+  public getAgent(): HttpAgent {
+    return this.agent;
+  }
+
   private async sendICP(
     to: string,
     amount: string,
     opts?: SendOpts
   ): Promise<string> {
-    const { secretKey } = this.identity.getKeyPair();
-    const agent = await createAgent({ secretKey, fetch: this.fetch });
-    const ledger = await createLedgerActor(agent);
+    const ledger = await createLedgerActor(this.agent);
     return ledger.sendICP({ to, amount, opts });
   }
 
@@ -470,12 +470,10 @@ class PlugWallet {
     amount: string,
     canisterId: string
   ): Promise<SendResponse> {
-    const { secretKey } = this.identity.getKeyPair();
-    const agent = await createAgent({ secretKey, fetch: this.fetch });
     const savedToken = this.registeredTokens[canisterId];
     const tokenActor = await createTokenActor(
       canisterId,
-      agent,
+      this.agent,
       savedToken.standard
     );
 

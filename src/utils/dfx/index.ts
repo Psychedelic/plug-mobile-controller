@@ -19,24 +19,20 @@ export interface CreateAgentArgs {
 export const createIdentity = (secretKey: BinaryBlob): Secp256k1KeyIdentity =>
   Secp256k1KeyIdentity.fromSecretKey(secretKey);
 
-export const createAgent = async ({
+export const createAgent = ({
   secretKey,
   defaultIdentity,
   fetch = crossFetch,
-}: CreateAgentArgs): Promise<HttpAgent> => {
+}: CreateAgentArgs): HttpAgent => {
   const identity =
-    defaultIdentity || (secretKey ? createIdentity(blobFromUint8Array(secretKey)) : undefined);
-  const agent = await Promise.resolve(
-    new HttpAgent({
-      host: process.env.DFX_HOST || PLUG_PROXY_HOST,
-      fetch: wrappedFetch(fetch),
-      identity,
-    })
-  ).then(async ag => {
-    await ag.fetchRootKey();
-    return ag;
+    defaultIdentity ||
+    (secretKey ? createIdentity(blobFromUint8Array(secretKey)) : undefined);
+
+  return new HttpAgent({
+    host: process.env.DFX_HOST || PLUG_PROXY_HOST,
+    fetch: wrappedFetch(fetch),
+    identity,
   });
-  return agent;
 };
 
 export { createLedgerActor } from './ledger';
