@@ -2,10 +2,13 @@ import { PublicKey } from '@dfinity/agent';
 import { BinaryBlob } from '@dfinity/candid';
 import { Principal } from '@dfinity/principal';
 import {
+  addAddress,
+  getAddresses,
   getCachedUserNFTs,
   getNFTActor,
   NFTCollection,
   NFTDetails,
+  removeAddress,
 } from '@psychedelic/dab-js';
 import randomColor from 'random-color';
 
@@ -38,6 +41,7 @@ import {
 } from '../utils/dfx/history/xtcHistory';
 
 import { ConnectedApp } from '../interfaces/account';
+import { Address } from '../interfaces/contactRegistry';
 import { getCapTransactions } from '../utils/dfx/history/cap';
 
 export interface TokenBalance {
@@ -402,6 +406,38 @@ class PlugWallet {
     }
     this.connectedApps = [...this.connectedApps.filter(app => app.url !== url)];
     return this.connectedApps;
+  };
+
+  public getContacts = async (): Promise<Array<Address>> => {
+    try {
+      const { secretKey } = this.identity.getKeyPair();
+      const agent = await createAgent({ secretKey, fetch: this.fetch });
+      return await getAddresses(agent);
+    } catch (e) {
+      return [];
+    }
+  };
+
+  public addContact = async (newContact: Address): Promise<boolean> => {
+    try {
+      const { secretKey } = this.identity.getKeyPair();
+      const agent = await createAgent({ secretKey, fetch: this.fetch });
+      const contactResponse = await addAddress(agent, newContact);
+      return contactResponse.hasOwnProperty('Ok') ? true : false;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  public deleteContact = async (addressName: string): Promise<boolean> => {
+    try {
+      const { secretKey } = this.identity.getKeyPair();
+      const agent = await createAgent({ secretKey, fetch: this.fetch });
+      const contactResponse = await removeAddress(agent, addressName);
+      return contactResponse.hasOwnProperty('Ok') ? true : false;
+    } catch (e) {
+      return false;
+    }
   };
 
   public get publicKey(): PublicKey {

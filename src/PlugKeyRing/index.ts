@@ -17,6 +17,7 @@ import { StandardToken } from '../interfaces/ext';
 import { BurnResult } from '../interfaces/xtc';
 import { ConnectedApp } from '../interfaces/account';
 import { recursiveParseBigint } from '../utils/object';
+import { Address } from '../interfaces/contactRegistry';
 
 interface StorageData {
   vault: PlugState;
@@ -475,6 +476,70 @@ class PlugKeyRing {
     JSON.parse(
       RNCryptoJS.AES.decrypt(state, password).toString(RNCryptoJS.enc.Utf8)
     );
+
+  public getContacts = async (
+    walletNumber?: number
+  ): Promise<Array<Address>> => {
+    this.checkUnlocked();
+    const index = (walletNumber ?? this.currentWalletId) || 0;
+    this.validateSubaccount(index);
+
+    const { wallets } = this.state;
+    const wallet = wallets[index];
+    const contacts = await wallet.getContacts();
+
+    return contacts.map(c => {
+      const value = c.value;
+      if (value.hasOwnProperty('PrincipalId')) {
+        value['PrincipalId'] = value['PrincipalId'].toText();
+      }
+
+      return {
+        ...c,
+        value,
+      };
+    });
+  };
+
+  public addContact = async (
+    newContact: Address,
+    walletNumber?: number
+  ): Promise<boolean> => {
+    this.checkUnlocked();
+    const index = (walletNumber ?? this.currentWalletId) || 0;
+    this.validateSubaccount(index);
+
+    const { wallets } = this.state;
+    const wallet = wallets[index];
+
+    const value = newContact.value;
+    if (value.hasOwnProperty('PrincipalId')) {
+      value['PrincipalId'] = Principal.fromText(value['PrincipalId']);
+    }
+
+    const response = await wallet.addContact({
+      ...newContact,
+      value,
+    });
+
+    return response;
+  };
+
+  public deleteContact = async (
+    addressName: string,
+    walletNumber?: number
+  ): Promise<boolean> => {
+    this.checkUnlocked();
+    const index = (walletNumber ?? this.currentWalletId) || 0;
+    this.validateSubaccount(index);
+
+    const { wallets } = this.state;
+    const wallet = wallets[index];
+
+    const response = await wallet.deleteContact(addressName);
+
+    return response;
+  };
 }
 
 export default PlugKeyRing;
