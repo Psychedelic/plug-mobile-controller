@@ -19,19 +19,17 @@ To install the package you need to be authenticated to Github via `npm login`, e
 
 - A personal access token (create one [here](https://github.com/settings/tokens)) with the `public_repo` and `read:packages` scopes to login to the [GitHub Package Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-to-github-packages).
 
-<!-- - Have authenticated via `npm login`, using the **personal access token** as your **password**: -->
-
-- Run the following command:
+* Run the following command:
 
 ```
 npm login --registry=https://npm.pkg.github.com --scope=@Psychedelic
 ```
 
-- Use your **github username** as **username**, then as **password** use your recently created **personal access token** and for **public email** your **email** asociated with your github account.
+- Use your **Github username** as **username**, then as **password** use your recently created **personal access token** and for **public email** your **email** associated with your Github account.
 
 ## Plug KeyRing
 
-A Plug Keyring is a class that manages the user's accounts and allow you to create/import a mnemonic and its keypair.
+Plug Keyring is a class that manages the user's accounts and allows you to create/import a mnemonic and its keypair.
 
 ```
 import PlugController from '@psychedelic/plug-controller';
