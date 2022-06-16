@@ -408,9 +408,7 @@ class PlugWallet {
 
   public getContacts = async (): Promise<Array<Address>> => {
     try {
-      const { secretKey } = this.identity.getKeyPair();
-      const agent = await createAgent({ secretKey, fetch: this.fetch });
-      return await getAddresses(agent);
+      return await getAddresses(this.agent);
     } catch (e) {
       return [];
     }
@@ -418,9 +416,7 @@ class PlugWallet {
 
   public addContact = async (newContact: Address): Promise<boolean> => {
     try {
-      const { secretKey } = this.identity.getKeyPair();
-      const agent = await createAgent({ secretKey, fetch: this.fetch });
-      const contactResponse = await addAddress(agent, newContact);
+      const contactResponse = await addAddress(this.agent, newContact);
       return contactResponse.hasOwnProperty('Ok') ? true : false;
     } catch (e) {
       return false;
@@ -429,9 +425,7 @@ class PlugWallet {
 
   public deleteContact = async (addressName: string): Promise<boolean> => {
     try {
-      const { secretKey } = this.identity.getKeyPair();
-      const agent = await createAgent({ secretKey, fetch: this.fetch });
-      const contactResponse = await removeAddress(agent, addressName);
+      const contactResponse = await removeAddress(this.agent, addressName);
       return contactResponse.hasOwnProperty('Ok') ? true : false;
     } catch (e) {
       return false;
