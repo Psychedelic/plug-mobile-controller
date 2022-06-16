@@ -1,5 +1,5 @@
 import RNCryptoJS from 'react-native-crypto-js';
-import { PublicKey } from '@dfinity/agent';
+import { HttpAgent, PublicKey } from '@dfinity/agent';
 import { BinaryBlob } from '@dfinity/candid';
 import { Principal } from '@dfinity/principal';
 import { NFTDetails, NFTCollection } from '@psychedelic/dab-js';
@@ -425,6 +425,13 @@ class PlugKeyRing {
     const currentWalletNumber = (walletNumber ?? this.currentWalletId) || 0;
     this.validateSubaccount(currentWalletNumber);
     return this.state.wallets[currentWalletNumber].pemFile;
+  };
+
+  public getAgent = (walletNumber?: number): HttpAgent => {
+    this.checkUnlocked();
+    const currentWalletNumber = (walletNumber ?? this.currentWalletId) || 0;
+    this.validateSubaccount(currentWalletNumber);
+    return this.state.wallets[currentWalletNumber].getAgent();
   };
 
   private checkUnlocked = (): void => {
